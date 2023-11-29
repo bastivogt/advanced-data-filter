@@ -1,10 +1,11 @@
 "use strict";
 
 export class SevoFilter {
-  constructor(inputStuffList) {
+  constructor(inputStuffList, config = {}) {
     this._inputStuffList = inputStuffList;
-    this.activeClass = "active";
-    this.all = "All";
+    this.activeClass = config.activeClass || "active";
+    this.all = config.all || "All";
+    this.stuffDataName = config.stuffDataName || "category";
     this.onComplete = () => {};
 
     this._categories = new Set();
@@ -21,7 +22,7 @@ export class SevoFilter {
 
   _extractCategories() {
     this._inputStuffList.forEach((item) => {
-      const categories = item.dataset.category.split(",");
+      const categories = item.dataset[this.stuffDataName].split(",");
       categories.forEach((category) => {
         this._categories.add(category);
       });
