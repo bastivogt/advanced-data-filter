@@ -1,16 +1,21 @@
-import { SevoFilter } from "./SevoFilter.js";
+import { SevoContentFilter } from "./SevoFilter.js";
 
-const stuffList = document.querySelectorAll("[data-category]");
+const contentList = document.querySelectorAll("[data-category]");
 const filterButtons = document.querySelector("#filter-buttons");
 
-const sfConfig = { all: "Alle" };
-const sf = new SevoFilter(stuffList, sfConfig);
+const scfConfig = { all: "Alle" };
+const scf = new SevoContentFilter(contentList, scfConfig);
 
-filterButtons.appendChild(sf.buttonsContainer);
+filterButtons.appendChild(scf.buttonsContainer);
 
-sf.onComplete = () => {
-  sf.filterButtonClick(
-    document.querySelector(`button[data-filter='${sfConfig.all}']`)
+scf.onComplete = (target) => {
+  console.log(target.categories);
+  target.filter(
+    document.querySelector(`button[data-filter='${target.categories[4]}']`)
   );
+
+  /*   target.filter(
+    document.querySelector(`button[data-filter='${target.categories[0]}']`)
+  );*/
 };
-sf.run();
+scf.run();

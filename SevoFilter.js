@@ -1,35 +1,43 @@
 "use strict";
 
-export class SevoFilter {
-  constructor(inputStuffList, config = {}) {
-    this._inputStuffList = inputStuffList;
+export class SevoContentFilter {
+  constructor(inputContentList, config = {}) {
+    this._inputStuffList = inputContentList;
+
     this.activeClass = config.activeClass || "active";
     this.all = config.all || "All";
-    this.stuffDataName = config.stuffDataName || "category";
+    this.contentDataName = config.contentDataName || "category";
     this.onComplete = () => {};
 
-    this._categories = new Set();
+    this._categories = [];
     this._buttonsContainer = null;
     this._buttons = null;
 
     this._extractCategories();
-    this.createButtons();
+    this._createButtons();
   }
 
   get buttonsContainer() {
     return this._buttonsContainer;
   }
 
+  get categories() {
+    return this._categories;
+  }
+
   _extractCategories() {
+    const cat = new Set();
     this._inputStuffList.forEach((item) => {
-      const categories = item.dataset[this.stuffDataName].split(",");
+      const categories = item.dataset[this.contentDataName].split(",");
       categories.forEach((category) => {
-        this._categories.add(category);
+        cat.add(category);
       });
+      this._categories = Array.from(cat);
+      this._categories.unshift(this.all);
     });
   }
 
-  createButtons() {
+  _createButtons() {
     this._buttonsContainer = document.createElement("div");
     this._categories.forEach((item) => {
       const button = document.createElement("button");
@@ -37,10 +45,6 @@ export class SevoFilter {
       button.dataset.filter = item;
       this._buttonsContainer.appendChild(button);
     });
-    const allButton = document.createElement("button");
-    allButton.textContent = this.all;
-    allButton.dataset.filter = this.all;
-    this._buttonsContainer.appendChild(allButton);
     return this._buttonsContainer;
   }
 
@@ -50,14 +54,18 @@ export class SevoFilter {
     );
     this._buttons.forEach((item) => {
       item.addEventListener("click", (evt) => {
-        this.filterButtonClick(evt.target);
-        this._filterContent(evt.target);
+        this.filter(evt.target);
       });
     });
-    this.onComplete();
+    this.onComplete(this);
   }
 
-  filterButtonClick(target) {
+  filter(target) {
+    this._filterButtonClick(target);
+    this._filterContent(target);
+  }
+
+  _filterButtonClick(target) {
     this._buttons.forEach((item) => {
       item.classList.remove(this.activeClass);
     });
